@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- log4j2 配置文件 -->
+<!-- 日志级别 trace<debug<info<warn<error<fatal -->
+<configuration status="info">
+    <!-- 自定义属性 -->
+    <Properties>
+        <!-- 日志格式 (控制台) -->
+        <Property name="pattern1">%d{yyyy-MM-dd HH:mm:ss:SSS} [%p] %c - %m%n</Property>
+        <!-- 日志格式 (文件) -->
+        <Property name="pattern2">%d{yyyy-MM-dd HH:mm:ss:SSS} [%p] %c - %m%n</Property>
+        <!-- 日志文件路径 -->
+        <Property name="filePath">logs/${date:yyyy-MM}/${date:MMdd}</Property>
+    </Properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern1}"/>
+        </Console>
+        <!-- 为每个级别定义一个附加器 -->
+        <RollingFile name="TraceLog" fileName="${filePath}-trace.log" filePattern = "${filePath}-trace-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <!-- 过滤日志级别 -->
+            <Filters>
+                <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <RollingFile name="DebugLog" fileName="${filePath}-debug.log" filePattern = "${filePath}-debug-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <Filters>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <RollingFile name="InfoLog" fileName="${filePath}-info.log" filePattern = "${filePath}-info-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <RollingFile name="WarnLog" fileName="${filePath}-warn.log" filePattern = "${filePath}-warn-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <RollingFile name="ErrorLog" fileName="${filePath}-error.log" filePattern = "${filePath}-error-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <RollingFile name="FatalLog" fileName="${filePath}-fatal.log" filePattern = "${filePath}-fatal-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <Filters>
+                <ThresholdFilter level="FATAL" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <RollingFile name="RootLog" fileName="${filePath}-root.log" filePattern = "${filePath}-root-%i.log.gz" >
+            <PatternLayout pattern="${pattern2}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
+
+    </appenders>
+
+    <!-- 为每个级别的日志指定一个记录器 -->
+    <!-- 注意：name属性不能与其他记录器重复，否则会出现冲突 -->
+    <loggers>
+        <root level="trace">
+            <appender-ref ref="RootLog"/>
+            <appender-ref ref="Console"/>
+        </root>
+        <logger name="trace" level="trace">
+            <appender-ref ref="TraceLog"/>
+        </logger>
+        <logger name="debug" level="debug">
+            <appender-ref ref="DebugLog"/>
+        </logger>
+        <logger name="info" level="info">
+            <appender-ref ref="InfoLog"/>
+        </logger>
+        <logger name="warn" level="warn">
+            <appender-ref ref="WarnLog"/>
+        </logger>
+        <logger name="error" level="error">
+            <appender-ref ref="ErrorLog"/>
+        </logger>
+        <logger name="fatal" level="fatal">
+            <appender-ref ref="FatalLog"/>
+        </logger>
+    </loggers>
+</configuration>
