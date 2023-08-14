@@ -1,13 +1,30 @@
 package dao;
 
-import java.sql.Timestamp;
+import dev.morphia.annotations.*;
 
+/*
+ * @Entity 注解表示该类为实体类
+ * @Entity(value = "stu") 表示该类对应的表名为stu
+ * @Id 注解表示该字段为主键
+ * @Indexes 注解表示该类的索引
+ * @IndexOptions 注解表示该索引的选项
+ * @Field 注解表示该字段为索引字段
+ */
+@Entity(value = "stu")
+@Indexes(@Index(options = @IndexOptions(name = "name"), fields = @Field("name")))
 public class Stu extends BaseObj {
-    private String name = "Candy";
-    private int age = 11;
-    private String gender = "female";
-    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    /*
+     *以下为实体类的属性
+     */
+    @Id
+    public String Id;
+    private String name;
+    private int age;
+    private String gender;
 
+    /*
+     * 以下为getter和setter方法
+     */
     public String getName() {
         return name;
     }
@@ -18,10 +35,6 @@ public class Stu extends BaseObj {
 
     public String getGender() {
         return gender;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
     }
 
     public void setName(String _name) {
@@ -36,7 +49,4 @@ public class Stu extends BaseObj {
         this.gender = _gender;
     }
 
-    public void setTimestamp(Timestamp _timestamp) {
-        this.timestamp = _timestamp;
-    }
 }

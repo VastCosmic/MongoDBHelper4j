@@ -1,139 +1,103 @@
 package dao;
 
-import Log.Log;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.client.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.result.DeleteResult;
+import dev.morphia.Datastore;
 
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Stream;
+import dev.morphia.Morphia;
+import dev.morphia.query.FindOptions;
+import dev.morphia.query.Meta;
+import dev.morphia.query.Sort;
+import org.bson.Document;
+
+import java.util.List;
 
 public class MongoDBHelper {
-    private final MongoClient mongoClient;
-    private MongoDatabase database = null;
-    //private MongoCollection<BasicDBObject> collection;
+    private final Datastore datastore;
 
     public MongoDBHelper(String host, int port, String dbName) {
-        mongoClient = new MongoClient(host, port);
-        database = mongoClient.getDatabase(dbName);
-        //collection = database.getCollection(collName, BasicDBObject.class);
+        MongoClient mongoClient = MongoClients.create("mongodb://" + host + ":" + port);
+        datastore = Morphia.createDatastore(mongoClient, dbName);
+    }
+
+    // 保存实体对象, 如果已存在, 则更新
+    public <T> T saveEntity(T entity) {
+        return datastore.save(entity);
+    }
+
+    // 删除实体对象
+    public <T> DeleteResult deleteEntity(T entity) {
+        return datastore.delete(entity);
     }
 
     /*
-     * 将对象存入数据库
-     * @param obj 要存入的对象, 应当继承自BaseObj
-     * @return boolean 是否存入成功
+     * 查找实体对象
+     * @param clazz 实体类的类对象
+     * @param findOptions 查询条件
+     * @return List<T> 实体对象列表
+     *
+     * batchSize 方法来设置每个批次返回的文档数量。
+     * 示例：new FindOptions().batchSize(100); 将每次返回100个文档。
+     *
+     * limit 方法来设置查询的限制数量。
+     * 示例：new FindOptions().limit(10); 将只返回10个文档。
+     *
+     * skip 方法来设置查询的跳过数量。
+     * 示例：new FindOptions().skip(10); 将跳过前10个文档。
+     *
+     * maxAwaitTime 方法来设置查询的最大等待时间。
+     * 示例：new FindOptions().maxAwaitTime(5, TimeUnit.SECONDS); 将在等待5秒后停止查询。
+     *
+     * maxTime 方法来设置查询的最大执行时间。
+     * 示例：new FindOptions().maxTime(10, TimeUnit.SECONDS); 将在执行10秒后停止查询。
+     *
+     * min和max 方法来设置查询的索引范围。
+     * 示例：new FindOptions().min(new Document(“age”, 18)).max(new Document(“age”, 30)); 将只匹配年龄在18到30之间的文档。
+     *
+     * sort 方法来设置查询的排序规则。这可以影响查询返回的文档顺序。
+     * 示例：new FindOptions().sort(new Document(“name”, 1)); 将按照name字段的升序排序。
+     *
+     * projection 方法来设置查询的投影规则。这可以影响查询返回的文档内容。
+     * 示例：new FindOptions().projection().include(“name”).exclude(“age”); 将只返回文档中的name字段，而不返回age字段。
      */
-    public boolean save(String collection, Object obj) {
-        BasicDBObject document = new BasicDBObject();
-        try {
-            Class<?> clazz = obj.getClass();
-
-            // 获取类的所有属性
-            // 获取类的父类的共有属性，并添加到fields中
-            Field[] fields = Stream.concat(
-                            Arrays.stream(clazz.getDeclaredFields()),
-                            Arrays.stream(clazz.getFields()))
-                    .toArray(Field[]::new);
-
-            for (Field field : fields) {
-                // 设置可访问性
-                field.setAccessible(true);
-                String name = field.getName();
-                Object value = null;
-                try {
-                    // 通过反射获取字段值
-                    value = field.get(obj);
-                } catch (IllegalAccessException e) {
-                    Log.error("Save error." + e);
-                    return false;
-                }
-                // 将字段名和值放入文档中
-                document.append(name, value);
-            }
-
-            database.getCollection(collection, BasicDBObject.class).insertOne(document);
+    public <T> List<T> findEntity(Class<T> clazz) {
+        try (var find = datastore.find(clazz).iterator()) {
+            return find.toList();
         } catch (Exception e) {
-            Log.error("Save error, check your format." + e);
-            return false;
+            e.printStackTrace();
         }
-        return true;
+        return null;
     }
 
-    public boolean insertOne(String collection, Map<String, Object> map) {
-        BasicDBObject document = new BasicDBObject();
-        for (String key : map.keySet()) {
-            document.append(key, map.get(key));
+    public <T> List<T> findEntity(Class<T> clazz, FindOptions findOptions) {
+        try (var find = datastore.find(clazz).iterator(findOptions)) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        database.getCollection(collection, BasicDBObject.class).insertOne(document);
-        return true;
+        return null;
     }
 
-    public boolean insertMany(String collection, List<Map<String, Object>> list) {
-        List<BasicDBObject> documents = new java.util.ArrayList<>(List.of());
-        for (Map<String, Object> map : list) {
-            BasicDBObject document = new BasicDBObject();
-            for (String key : map.keySet()) {
-                document.append(key, map.get(key));
-            }
-            documents.add(document);
+    public <T> List<T> findEntityWithBatchSize(Class<T> clazz, int batchSize) {
+        try (var find = datastore.find(clazz).iterator(new FindOptions().batchSize(batchSize))) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        database.getCollection(collection, BasicDBObject.class).insertMany(documents);
-        return true;
+        return null;
     }
 
-    /*
-     **从collection中删除匹配参数的第一个document
-     */
-    public DeleteResult deleteOne(String collection, String key, Object value) {
-        BasicDBObject document = new BasicDBObject();
-        document.append(key, value);
-        return database.getCollection(collection, BasicDBObject.class).deleteOne(document);
-    }
-
-    public DeleteResult deleteOne(String collection, Map<String, Object> map) {
-        BasicDBObject document = new BasicDBObject();
-        for (String key : map.keySet()) {
-            document.append(key, map.get(key));
+    public <T> List<T> findEntityWithSort(Class<T> clazz, String fieldName, int sort) {
+        // sort: 1 升序, -1 降序
+        if (sort != -1 && sort != 1) {
+            return null;
         }
-        return database.getCollection(collection, BasicDBObject.class).deleteOne(document);
-    }
-
-    /*
-     **从collection中删除匹配参数的所有document
-     */
-    public DeleteResult deleteAll(String collection, String key, Object value) {
-        BasicDBObject document = new BasicDBObject();
-        document.append(key, value);
-        return database.getCollection(collection, BasicDBObject.class).deleteMany(document);
-    }
-
-    public DeleteResult deleteAll(String collection, Map<String, Object> map) {
-        BasicDBObject document = new BasicDBObject();
-        for (String key : map.keySet()) {
-            document.append(key, map.get(key));
+        try (var find = datastore.find(clazz).iterator(new FindOptions().sort(new Document(fieldName, sort)))) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return database.getCollection(collection, BasicDBObject.class).deleteMany(document);
+        return null;
     }
-
-    public void close() {
-        mongoClient.close();
-        Log.info("MongoDB client closed.");
-    }
-
-    //    public boolean setCurrentCollection(String collName) throws NullPointerException {
-//        try {
-//            collection = database.getCollection(collName, BasicDBObject.class);
-//            return true;
-//        } catch (NullPointerException e) {
-//            Log.error("Database may not be initialed." + e);
-//            return false;
-//        }
-//    }
-
-//    public MongoCollection<BasicDBObject> getCurrentCollection() {
-//        return collection;
-//    }
 }
