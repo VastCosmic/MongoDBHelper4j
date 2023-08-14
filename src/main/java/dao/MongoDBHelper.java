@@ -1,7 +1,10 @@
 package dao;
 
+import Log.Log;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import dev.morphia.Datastore;
 
@@ -12,13 +15,17 @@ import dev.morphia.query.Sort;
 import org.bson.Document;
 
 import java.util.List;
+import java.util.Map;
 
 public class MongoDBHelper {
     private final Datastore datastore;
+    private final MongoDatabase database;
+    private final MongoClient mongoClient;
 
     public MongoDBHelper(String host, int port, String dbName) {
-        MongoClient mongoClient = MongoClients.create("mongodb://" + host + ":" + port);
+        mongoClient = MongoClients.create("mongodb://" + host + ":" + port);
         datastore = Morphia.createDatastore(mongoClient, dbName);
+        database = mongoClient.getDatabase(dbName);
     }
 
     // 保存实体对象, 如果已存在, 则更新
@@ -99,5 +106,94 @@ public class MongoDBHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /****************************
+     *以下为不引用Morphia的原生操作
+     ****************************/
+    public boolean insertOne(String collection, Map<String, Object> map) {
+        BasicDBObject document = new BasicDBObject();
+        for (String key : map.keySet()) {
+            document.append(key, map.get(key));
+        }
+        database.getCollection(collection, BasicDBObject.class).insertOne(document);
+        return true;
+    }
+
+    public boolean insertMany(String collection, List<Map<String, Object>> list) {
+        List<BasicDBObject> documents = new java.util.ArrayList<>(List.of());
+        for (Map<String, Object> map : list) {
+            BasicDBObject document = new BasicDBObject();
+            for (String key : map.keySet()) {
+                document.append(key, map.get(key));
+            }
+            documents.add(document);
+        }
+        database.getCollection(collection, BasicDBObject.class).insertMany(documents);
+        return true;
+    }
+
+    /*
+     **从collection中删除匹配参数的第一个document
+     */
+    public DeleteResult deleteOne(String collection, String key, Object value) {
+        BasicDBObject document = new BasicDBObject();
+        document.append(key, value);
+        return database.getCollection(collection, BasicDBObject.class).deleteOne(document);
+    }
+
+    public DeleteResult deleteOne(String collection, Map<String, Object> map) {
+        BasicDBObject document = new BasicDBObject();
+        for (String key : map.keySet()) {
+            document.append(key, map.get(key));
+        }
+        return database.getCollection(collection, BasicDBObject.class).deleteOne(document);
+    }
+
+    /*
+     **从collection中删除匹配参数的所有document
+     */
+    public DeleteResult deleteAll(String collection, String key, Object value) {
+        BasicDBObject document = new BasicDBObject();
+        document.append(key, value);
+        return database.getCollection(collection, BasicDBObject.class).deleteMany(document);
+    }
+
+    public DeleteResult deleteAll(String collection, Map<String, Object> map) {
+        BasicDBObject document = new BasicDBObject();
+        for (String key : map.keySet()) {
+            document.append(key, map.get(key));
+        }
+        return database.getCollection(collection, BasicDBObject.class).deleteMany(document);
+    }
+
+    /*
+     * 从collection中查找匹配参数的第一个document
+     * @param key 字段名
+     * @param value 字段值
+     * @return BasicDBObject 匹配的document
+     */
+    public BasicDBObject findOne(String collection, String key, Object value) {
+        BasicDBObject document = new BasicDBObject();
+        document.append(key, value);
+        return database.getCollection(collection, BasicDBObject.class).find(document).first();
+    }
+
+    /*
+     * 从collection中查找匹配参数的所有document
+     * @param key 字段名
+     * @param value 字段值
+     * @return List<BasicDBObject> 匹配的document列表
+     */
+    public List<BasicDBObject> findAll(String collection, String key, Object value) {
+        BasicDBObject document = new BasicDBObject();
+        document.append(key, value);
+        return database.getCollection(collection, BasicDBObject.class).find(document).into(new java.util.ArrayList<>());
+    }
+
+    public void close() {
+        mongoClient.close();
+        Log.info("MongoDB client closed.");
     }
 }
