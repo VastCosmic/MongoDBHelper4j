@@ -5,9 +5,12 @@ import dao.Stu;
 import Log.Log;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import static TestMain.TestMain.TestPak.findEntityWithFiltersTest;
 import static java.lang.Thread.sleep;
 
 public class TestMain {
@@ -21,12 +24,14 @@ public class TestMain {
         List<Stu> result = TestPak.findTest();
         sleep(1000);
         TestPak.saveUpdateTest(result.get(0));
+        sleep(1000);
+        findEntityWithFiltersTest(stu);
     }
 
-    public static class TestPak{
+    public static class TestPak {
         private static final MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo");
 
-        public static void saveNewTest(Stu stu){
+        public static void saveNewTest(Stu stu) {
             // 随机年龄与性别
             int age = new Random().nextInt(100);
             // 随机生成人名字符串作为姓名，第一个字符大写
@@ -46,7 +51,7 @@ public class TestMain {
             Log.info("Save successfully.");
         }
 
-        public static List<Stu> findTest(){
+        public static List<Stu> findTest() {
             Log.info("Sort by name.");
             var result = db.findEntityWithSort(Stu.class, "name", 1);
             for (var obj : result) {
@@ -62,8 +67,8 @@ public class TestMain {
             return result;
         }
 
-        public static void saveUpdateTest(Stu stu){
-            stu.setName(stu.getName()+"_update");
+        public static void saveUpdateTest(Stu stu) {
+            stu.setName(stu.getName() + "_update");
             stu.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             stu.setUpdater("admin");
 
@@ -71,9 +76,19 @@ public class TestMain {
             Log.info("Update successfully.");
         }
 
-        public static void deleteTest(Stu stu){
+        public static void deleteTest(Stu stu) {
             db.deleteEntity(stu);
             Log.info("Delete successfully.");
+        }
+
+        public static void findEntityWithFiltersTest(Stu stu) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("updater", "system");
+            map.put("gender", "man");
+            var result = db.findEntityWithFilters(Stu.class, map);
+            for (var obj : result) {
+                Log.info("Name：" + obj.getName() + " Age：" + obj.getAge() + " Gender：" + obj.getGender());
+            }
         }
     }
 }

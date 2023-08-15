@@ -7,11 +7,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import dev.morphia.Datastore;
-
 import dev.morphia.Morphia;
 import dev.morphia.query.FindOptions;
-import dev.morphia.query.Meta;
-import dev.morphia.query.Sort;
 import org.bson.Document;
 
 import java.util.List;
@@ -26,6 +23,14 @@ public class MongoDBHelper {
         mongoClient = MongoClients.create("mongodb://" + host + ":" + port);
         datastore = Morphia.createDatastore(mongoClient, dbName);
         database = mongoClient.getDatabase(dbName);
+    }
+
+    public Datastore getdatastore() {
+        return datastore;
+    }
+
+    public MongoDatabase getDatabase() {
+        return database;
     }
 
     // 保存实体对象, 如果已存在, 则更新
@@ -68,6 +73,8 @@ public class MongoDBHelper {
      * projection 方法来设置查询的投影规则。这可以影响查询返回的文档内容。
      * 示例：new FindOptions().projection().include(“name”).exclude(“age”); 将只返回文档中的name字段，而不返回age字段。
      */
+
+    // 查找
     public <T> List<T> findEntity(Class<T> clazz) {
         try (var find = datastore.find(clazz).iterator()) {
             return find.toList();
@@ -86,6 +93,7 @@ public class MongoDBHelper {
         return null;
     }
 
+    // 分批次查找
     public <T> List<T> findEntityWithBatchSize(Class<T> clazz, int batchSize) {
         try (var find = datastore.find(clazz).iterator(new FindOptions().batchSize(batchSize))) {
             return find.toList();
@@ -95,6 +103,7 @@ public class MongoDBHelper {
         return null;
     }
 
+    // 查找并排序
     public <T> List<T> findEntityWithSort(Class<T> clazz, String fieldName, int sort) {
         // sort: 1 升序, -1 降序
         if (sort != -1 && sort != 1) {
@@ -108,10 +117,73 @@ public class MongoDBHelper {
         return null;
     }
 
+    // 过滤查找
+    public <T> List<T> findEntityWithFilters(Class<T> clazz, Map<String, Object> queryMap) {
+        Document document = new Document();
+        for (String key : queryMap.keySet()) {
+            document.append(key, queryMap.get(key));
+        }
+        try (var find = datastore.find(clazz, document).iterator()) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public <T> List<T> findEntityWithFilters(Class<T> clazz, Map<String, Object> queryMap, FindOptions findOptions) {
+        Document document = new Document();
+        for (String key : queryMap.keySet()) {
+            document.append(key, queryMap.get(key));
+        }
+        try (var find = datastore.find(clazz, document).iterator(findOptions)) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 分批次过滤查找
+    public <T> List<T> findEntityWithFiltersByBatchSize(Class<T> clazz, Map<String, Object> queryMap, int batchSize) {
+        Document document = new Document();
+        for (String key : queryMap.keySet()) {
+            document.append(key, queryMap.get(key));
+        }
+        try (var find = datastore.find(clazz, document).iterator(new FindOptions().batchSize(batchSize))) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 过滤查找并排序
+    public <T> List<T> findEntityWithFiltersAndSort(Class<T> clazz, Map<String, Object> queryMap, String fieldName, int sort) {
+        // sort: 1 升序, -1 降序
+        if (sort != -1 && sort != 1) {
+            return null;
+        }
+        Document document = new Document();
+        for (String key : queryMap.keySet()) {
+            document.append(key, queryMap.get(key));
+        }
+        try (var find = datastore.find(clazz, document).iterator(new FindOptions().sort(new Document(fieldName, sort)))) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /****************************
-     *以下为不引用Morphia的原生操作
+     *以下为不引用Morphia框架的原生操作
      ****************************/
+
+    /*
+     *向collection中插入一个document
+     */
     public boolean insertOne(String collection, Map<String, Object> map) {
         BasicDBObject document = new BasicDBObject();
         for (String key : map.keySet()) {
@@ -181,6 +253,19 @@ public class MongoDBHelper {
     }
 
     /*
+     * 从collection中查找匹配参数的第一个document
+     * @param map 字段名和字段值的键值对
+     * @return BasicDBObject 匹配的document
+     */
+    public BasicDBObject findOne(String collection, Map<String, Object> map) {
+        BasicDBObject document = new BasicDBObject();
+        for (String key : map.keySet()) {
+            document.append(key, map.get(key));
+        }
+        return database.getCollection(collection, BasicDBObject.class).find(document).first();
+    }
+
+    /*
      * 从collection中查找匹配参数的所有document
      * @param key 字段名
      * @param value 字段值
@@ -189,6 +274,19 @@ public class MongoDBHelper {
     public List<BasicDBObject> findAll(String collection, String key, Object value) {
         BasicDBObject document = new BasicDBObject();
         document.append(key, value);
+        return database.getCollection(collection, BasicDBObject.class).find(document).into(new java.util.ArrayList<>());
+    }
+
+    /*
+     * 从collection中查找匹配参数的所有document
+     * @param map 字段名和字段值的键值对
+     * @return List<BasicDBObject> 匹配的document列表
+     */
+    public List<BasicDBObject> findAll(String collection, Map<String, Object> map) {
+        BasicDBObject document = new BasicDBObject();
+        for (String key : map.keySet()) {
+            document.append(key, map.get(key));
+        }
         return database.getCollection(collection, BasicDBObject.class).find(document).into(new java.util.ArrayList<>());
     }
 

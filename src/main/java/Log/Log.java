@@ -12,26 +12,32 @@ public class Log {
     private static final Logger fatalLogger = LogManager.getLogger("fatal");
 
     // Info 写Info日志方法
-    public static void info (String msg) { infoLogger.info(msg); }
+    public static void info(String msg) {
+        infoLogger.info(msg);
+    }
 
     // Error 写Error方法
-    public static void error (String msg){
+    public static void error(String msg) {
         errorLogger.error(msg);
     }
 
     // Debug 写Debug方法
-    public static void debug (String msg){
+    public static void debug(String msg) {
         debugLogger.debug(msg);
     }
 
     // Warn 写Warn方法
-    public static void warn (String msg){
+    public static void warn(String msg) {
         warnLogger.warn(msg);
     }
 
     // Trace 写Trace方法
-    public static void trace (String msg){traceLogger.trace(msg);}
+    public static void trace(String msg) {
+        traceLogger.trace(msg);
+    }
 
     // Fatal 写Fatal方法
-    public static void fatal (String msg){fatalLogger.fatal(msg);}
+    public static void fatal(String msg) {
+        fatalLogger.fatal(msg);
+    }
 }

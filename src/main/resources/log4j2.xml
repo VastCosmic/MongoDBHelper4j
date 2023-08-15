@@ -16,7 +16,7 @@
             <PatternLayout pattern="${pattern1}"/>
         </Console>
         <!-- 为每个级别定义一个附加器 -->
-        <RollingFile name="TraceLog" fileName="${filePath}-trace.log" filePattern = "${filePath}-trace-%i.log.gz" >
+        <RollingFile name="TraceLog" fileName="${filePath}-trace.log" filePattern="${filePath}-trace-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
@@ -24,60 +24,60 @@
             <DefaultRolloverStrategy max="3"/>
             <!-- 过滤日志级别 -->
             <Filters>
-                <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY" />
+                <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
-        <RollingFile name="DebugLog" fileName="${filePath}-debug.log" filePattern = "${filePath}-debug-%i.log.gz" >
+        <RollingFile name="DebugLog" fileName="${filePath}-debug.log" filePattern="${filePath}-debug-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="3"/>
             <Filters>
-                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
-        <RollingFile name="InfoLog" fileName="${filePath}-info.log" filePattern = "${filePath}-info-%i.log.gz" >
+        <RollingFile name="InfoLog" fileName="${filePath}-info.log" filePattern="${filePath}-info-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="3"/>
             <Filters>
-                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
-        <RollingFile name="WarnLog" fileName="${filePath}-warn.log" filePattern = "${filePath}-warn-%i.log.gz" >
+        <RollingFile name="WarnLog" fileName="${filePath}-warn.log" filePattern="${filePath}-warn-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="3"/>
             <Filters>
-                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY" />
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
-        <RollingFile name="ErrorLog" fileName="${filePath}-error.log" filePattern = "${filePath}-error-%i.log.gz" >
+        <RollingFile name="ErrorLog" fileName="${filePath}-error.log" filePattern="${filePath}-error-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="3"/>
             <Filters>
-                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
-        <RollingFile name="FatalLog" fileName="${filePath}-fatal.log" filePattern = "${filePath}-fatal-%i.log.gz" >
+        <RollingFile name="FatalLog" fileName="${filePath}-fatal.log" filePattern="${filePath}-fatal-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="3"/>
             <Filters>
-                <ThresholdFilter level="FATAL" onMatch="ACCEPT" onMismatch="DENY" />
+                <ThresholdFilter level="FATAL" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
-        <RollingFile name="RootLog" fileName="${filePath}-root.log" filePattern = "${filePath}-root-%i.log.gz" >
+        <RollingFile name="RootLog" fileName="${filePath}-root.log" filePattern="${filePath}-root-%i.log.gz">
             <PatternLayout pattern="${pattern2}"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
