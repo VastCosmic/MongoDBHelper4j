@@ -38,7 +38,7 @@ public class TestMain {
 
         public static void largeDataSaveTest(){
             int batchSize = 100;
-            int totalRecords = 50000;
+            int totalRecords = 10000000;
             List<Stu> stuList = new ArrayList<>();
             for (int i = 0; i < totalRecords; i++) {
                 Stu student = new Stu();
@@ -55,7 +55,7 @@ public class TestMain {
                 stuList.add(student);
             }
             Log.info("Start saving data.");
-            db.saveEntity(stuList, batchSize,12);    // 5ms
+            db.saveEntity(stuList, batchSize,100);    // 5ms
             Log.info("Saving data OK.");
         }
 

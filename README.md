@@ -2,6 +2,10 @@
 
 A MongoDBHelper with morphia for java.
 
+### Dir: 
+
+`src/main/java/dao/MongoDBHelper.java`
+
 ## 简介
 
 该项目提供了一个简单的MongoDB辅助工具，并提供了包括且不限于多线程存储与读取的优化方法。
