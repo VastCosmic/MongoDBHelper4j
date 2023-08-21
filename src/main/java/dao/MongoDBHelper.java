@@ -11,8 +11,11 @@ import dev.morphia.Morphia;
 import dev.morphia.query.FindOptions;
 import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MongoDBHelper {
     private final Datastore datastore;
@@ -37,6 +40,52 @@ public class MongoDBHelper {
     public <T> T saveEntity(T entity) {
         return datastore.save(entity);
     }
+    public <T> List<T> saveEntity(List<T> entityList) {
+        return datastore.save(entityList);
+    }
+    public <T> List<T> saveEntity(List<T> entityList, int batchSize, int threadSize) {
+        long entityListSize = entityList.size();
+        long batchNum = entityListSize / batchSize;
+        long lastBatchSize = entityListSize % batchSize;
+
+        ExecutorService executor = Executors.newFixedThreadPool(threadSize);
+
+        for (int i = 0; i < batchNum; i++) {
+            List<T> batch = new ArrayList<>(batchSize);
+            for (int j = 0; j < batchSize; j++) {
+                batch.add(entityList.get((int) (i * batchSize + j)));
+            }
+            executor.execute(() -> datastore.save(batch));
+        }
+
+        if (lastBatchSize != 0) {
+            List<T> lastBatch = new ArrayList<>((int) lastBatchSize);
+            for (int i = (int) (entityListSize - lastBatchSize); i < entityListSize; i++) {
+                lastBatch.add(entityList.get(i));
+            }
+            executor.execute(() -> datastore.save(lastBatch));
+        }
+
+        executor.shutdown();
+        return entityList;
+    }
+    public <T> List<T> saveEntity(List<T> entityList, int batchSize) {
+        long entityListSize = entityList.size();
+        List<T> batch = new ArrayList<>(batchSize);
+        for (T entity : entityList) {
+            batch.add(entity);
+            if (batch.size() == batchSize) {
+                datastore.save(batch);
+                batch.clear();
+            }
+        }
+        if (!batch.isEmpty()) {
+            datastore.save(batch);
+            batch.clear();
+        }
+        return entityList;
+    }
+
 
     // 删除实体对象
     public <T> DeleteResult deleteEntity(T entity) {

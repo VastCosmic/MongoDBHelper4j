@@ -91,7 +91,7 @@
     <!-- 注意：name属性不能与其他记录器重复，否则会出现冲突 -->
     <loggers>
         <root level="trace">
-            <appender-ref ref="RootLog"/>
+<!--            <appender-ref ref="RootLog"/>-->
             <appender-ref ref="Console"/>
         </root>
         <logger name="trace" level="trace">
