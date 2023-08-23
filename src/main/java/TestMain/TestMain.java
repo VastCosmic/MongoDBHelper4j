@@ -8,19 +8,71 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static TestMain.TestMain.TestPak.largeDataSaveTest;
+import static java.lang.Thread.sleep;
 
 public class TestMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo");
 
-        largeDataSaveTest();
-//        Log.info("Start finding data.");
-//        var result = db.findEntity(Stu.class);
-//        Log.info("Finding data OK.");
-//        // 打印
-//        for(var obj : result){
-//            //Log.info("Name：" + obj.getName() + " Age：" + obj.getAge() + " Gender：" + obj.getGender());
-//        }
+        // 每秒存储一次
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //largeDataSaveTest();
+            }
+        }, 0, 1000);
+
+        Log.info("Start finding data.");
+        //var result = db.findEntityByPageByTime(Stu.class, 1, 10, -1);
+        var result = db.findEntityByPage(Stu.class, 152, 100);
+        //var result = db.findEntityWithBatchSize(Stu.class,100);
+        Log.info("Finding data OK.");
+        // 打印找到的个数
+        Log.info("Found " + result.size() + " records.");
+//
+////        // 删除
+////        Log.info("Start deleting data.");
+////        db.deleteEntity(result);
+////        Log.info("Deleting data OK.");
+//
+        // 打印
+        for(var obj : result){
+            Log.info("Name：" + obj.getName() + " Age：" + obj.getAge() + " Gender：" + obj.getGender());
+            Log.info("Creator：" + obj.getCreator() + " CreateTime：" + obj.getCreateTime() + " Updater：" + obj.getUpdater() + " UpdateTime：" + obj.getUpdateTime());
+        }
+
+        // 新建一个线程，每小时打印一次数据库中的数据到文件中
+//        Thread thread = new Thread(
+//                () -> {
+//                    try {
+//                        Timer timerPrint = new Timer();
+//                        timerPrint.schedule(new TimerTask() {
+//                            @Override
+//                            public void run() {
+//                                Log.info("Start finding data.");
+//                                var result = db.findEntity(Stu.class);
+//                                Log.info("Finding data OK.");
+//                                // 打印找到的第一个的时间
+//                                Log.info("Found " + result.size() + " records.");
+//                                if (!result.isEmpty()) {
+//                                    // 打印找到的第一个的时间
+//                                    Log.info("First record's time: " + result.get(0).getUpdateTime());
+//                                    // 打印所有找到的数据
+////                                    for (Stu v : result) {
+////                                        Log.trace("Name：" + v.getName() + " Age：" + v.getAge() + " Gender：" + v.getGender());
+////                                        Log.trace("Creator：" + v.getCreator() + " CreateTime：" + v.getCreateTime() + " Updater：" + v.getUpdater() + " UpdateTime：" + v.getUpdateTime());
+////                                    }
+//                                }
+//                            }
+//                        }, 60000, 1000 * 60 * 60);
+//                    } catch (Exception e) {
+//                        Log.error(String.valueOf(e));
+//                    }
+//                }
+//        );
+//        thread.start();
+
 
 //        // 创建测试用Stu类型数据
 //        Stu stu = new Stu();
@@ -36,9 +88,9 @@ public class TestMain {
     public static class TestPak {
         private static final MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo");
 
-        public static void largeDataSaveTest(){
+        public static void largeDataSaveTest() {
             int batchSize = 100;
-            int totalRecords = 10000000;
+            int totalRecords = 20000;
             List<Stu> stuList = new ArrayList<>();
             for (int i = 0; i < totalRecords; i++) {
                 Stu student = new Stu();
@@ -55,7 +107,7 @@ public class TestMain {
                 stuList.add(student);
             }
             Log.info("Start saving data.");
-            db.saveEntity(stuList, batchSize,100);    // 5ms
+            db.saveEntity(stuList, batchSize, 8);    // 5ms
             Log.info("Saving data OK.");
         }
 

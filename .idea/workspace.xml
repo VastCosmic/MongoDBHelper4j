@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf548a17-7987-46c2-a0c1-31769ea1ef3c" name="更改" comment="v0.3.0 新增多线程、自定义batch性能优化">
+    <list default="true" id="bf548a17-7987-46c2-a0c1-31769ea1ef3c" name="更改" comment="v0.3.0 UPDATE README.md">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/TestMain/TestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TestMain/TestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dao/BaseObj.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/BaseObj.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dao/MongoDBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MongoDBHelper.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,10 +27,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="importingSettings">
       <MavenImportingSettings>
-        <option name="jdkForImporter" value="20" />
+        <option name="jdkForImporter" value="17" />
       </MavenImportingSettings>
     </option>
   </component>
@@ -74,8 +80,8 @@
   </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
-      <command value="mvn javadoc:javadoc" />
       <command value="mvn site site:stage" />
+      <command value="mvn javadoc:javadoc" />
     </option>
   </component>
   <component name="RunManager">
@@ -133,6 +139,14 @@
       <workItem from="1692631373418" duration="234000" />
       <workItem from="1692631623603" duration="2348000" />
       <workItem from="1692634668680" duration="670000" />
+      <workItem from="1692635417784" duration="158000" />
+      <workItem from="1692662457173" duration="910000" />
+      <workItem from="1692671906719" duration="2945000" />
+      <workItem from="1692674894048" duration="2870000" />
+      <workItem from="1692688313688" duration="2879000" />
+      <workItem from="1692691215789" duration="1595000" />
+      <workItem from="1692692911775" duration="1034000" />
+      <workItem from="1692749743739" duration="5800000" />
     </task>
     <task id="LOCAL-00001" summary="demo">
       <option name="closed" value="true" />
@@ -198,7 +212,15 @@
       <option name="project" value="LOCAL" />
       <updated>1692632464384</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="v0.3.0 UPDATE README.md">
+      <option name="closed" value="true" />
+      <created>1692635521048</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1692635521048</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,7 +234,8 @@
     <MESSAGE value="v0.1.1 format completed" />
     <MESSAGE value="v0.2.0 MongoDBHelper with morphia completed" />
     <MESSAGE value="v0.3.0 新增多线程、自定义batch性能优化" />
-    <option name="LAST_COMMIT_MESSAGE" value="v0.3.0 新增多线程、自定义batch性能优化" />
+    <MESSAGE value="v0.3.0 UPDATE README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.3.0 UPDATE README.md" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

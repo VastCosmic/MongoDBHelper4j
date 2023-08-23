@@ -38,11 +38,17 @@ public class MongoDBHelper {
 
     // 保存实体对象, 如果已存在, 则更新
     public <T> T saveEntity(T entity) {
-        return datastore.save(entity);
+        datastore.save(entity);
+        datastore.ensureIndexes();
+        return entity;
     }
+
     public <T> List<T> saveEntity(List<T> entityList) {
-        return datastore.save(entityList);
+        datastore.save(entityList);
+        datastore.ensureIndexes();
+        return entityList;
     }
+
     public <T> List<T> saveEntity(List<T> entityList, int batchSize, int threadSize) {
         long entityListSize = entityList.size();
         long batchNum = entityListSize / batchSize;
@@ -55,7 +61,9 @@ public class MongoDBHelper {
             for (int j = 0; j < batchSize; j++) {
                 batch.add(entityList.get((int) (i * batchSize + j)));
             }
-            executor.execute(() -> datastore.save(batch));
+            executor.execute(() -> {
+                datastore.save(batch);
+            });
         }
 
         if (lastBatchSize != 0) {
@@ -63,12 +71,16 @@ public class MongoDBHelper {
             for (int i = (int) (entityListSize - lastBatchSize); i < entityListSize; i++) {
                 lastBatch.add(entityList.get(i));
             }
-            executor.execute(() -> datastore.save(lastBatch));
+            executor.execute(() -> {
+                datastore.save(lastBatch);
+            });
         }
 
         executor.shutdown();
+        datastore.ensureIndexes();
         return entityList;
     }
+
     public <T> List<T> saveEntity(List<T> entityList, int batchSize) {
         long entityListSize = entityList.size();
         List<T> batch = new ArrayList<>(batchSize);
@@ -83,6 +95,7 @@ public class MongoDBHelper {
             datastore.save(batch);
             batch.clear();
         }
+        datastore.ensureIndexes();
         return entityList;
     }
 
@@ -90,6 +103,14 @@ public class MongoDBHelper {
     // 删除实体对象
     public <T> DeleteResult deleteEntity(T entity) {
         return datastore.delete(entity);
+    }
+
+    public <T> List<DeleteResult> deleteEntity(List<T> entityList) {
+        List<DeleteResult> deleteResultList = new ArrayList<>();
+        for (T entity : entityList) {
+            deleteResultList.add(datastore.delete(entity));
+        }
+        return deleteResultList;
     }
 
     /*
@@ -126,6 +147,32 @@ public class MongoDBHelper {
     // 查找
     public <T> List<T> findEntity(Class<T> clazz) {
         try (var find = datastore.find(clazz).iterator()) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 分页查找
+    //若实体类中存在时间, 则按时间排序, 默认为降序
+    public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize) {
+        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize).sort(new Document("updateTime", -1)))) {
+            return find.toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 分页查找
+    // 若实体类中存在时间, 则按时间排序, 默认为降序, -1 降序, 1 升序
+    public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize, int sort) {
+        // sort: 1 升序, -1 降序
+        if (sort != -1 && sort != 1) {
+            return null;
+        }
+        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize).sort(new Document("updateTime", sort)))) {
             return find.toList();
         } catch (Exception e) {
             e.printStackTrace();

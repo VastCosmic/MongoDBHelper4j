@@ -1,16 +1,26 @@
 package dao;
 
+import dev.morphia.annotations.*;
+import dev.morphia.utils.IndexDirection;
+
+import java.sql.Timestamp;
 import java.util.Date;
 
+@Entity(value = "baseObj")
 public class BaseObj {
     // 创建用户
     public String creator = "system";
-    // 创建时间
-    public Date createTime = new Date();
+
+    // 创建时间, 默认创建降序索引, 允许后台自动创建索引
+    @Indexed(options = @IndexOptions(background = true), value = IndexDirection.DESC)
+    public Date createTime = new Timestamp(System.currentTimeMillis());
+
     // 更新用户
     public String updater = "system";
-    // 更新时间
-    public Date updateTime = new Date();
+
+    // 更新时间, 默认创建降序索引, 允许后台自动创建索引
+    @Indexed(options = @IndexOptions(background = true), value = IndexDirection.DESC)
+    public Date updateTime = new Timestamp(System.currentTimeMillis());
 
     public String getCreator() {
         return creator;
