@@ -14,22 +14,23 @@ public class TestMain {
     public static void main(String[] args) throws InterruptedException {
         MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo");
 
-        // 每秒存储一次
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                //largeDataSaveTest();
-            }
-        }, 0, 1000);
+        //每秒存储一次
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                largeDataSaveTest();
+//            }
+//        }, 0, 1000);
 
         Log.info("Start finding data.");
         //var result = db.findEntityByPageByTime(Stu.class, 1, 10, -1);
-        var result = db.findEntityByPage(Stu.class, 152, 100);
+        var result = db.findEntityByPage(Stu.class, 900000, 100);
         //var result = db.findEntityWithBatchSize(Stu.class,100);
         Log.info("Finding data OK.");
         // 打印找到的个数
         Log.info("Found " + result.size() + " records.");
+
 //
 ////        // 删除
 ////        Log.info("Start deleting data.");
