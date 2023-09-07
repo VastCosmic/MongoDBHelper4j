@@ -6,27 +6,96 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
+import dao.Entity.IOTable;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
+import dev.morphia.mapping.DiscriminatorFunction;
+import dev.morphia.mapping.Mapper;
+import dev.morphia.mapping.MapperOptions;
+import dev.morphia.mapping.NamingStrategy;
+import dev.morphia.mapping.codec.pojo.EntityModelBuilder;
 import dev.morphia.query.FindOptions;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
+/*
+ * MongoDBHelper
+ *
+ * 该类基于Morphia框架（2.3.6）
+ * https://morphia.dev/morphia/2.3/configuration.html
+ *
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.morphia.morphia</groupId>
+            <artifactId>morphia-core</artifactId>
+            <version>2.3.6</version>
+        </dependency>
+ *
+ */
 public class MongoDBHelper {
     private final Datastore datastore;
     private final MongoDatabase database;
     private final MongoClient mongoClient;
-
-    public MongoDBHelper(String host, int port, String dbName) {
+    public MongoDBHelper(String host, int port, String dbName, String mapPackage) {
         mongoClient = MongoClients.create("mongodb://" + host + ":" + port);
         datastore = Morphia.createDatastore(mongoClient, dbName);
+        datastore.getMapper().mapPackage(mapPackage);
+        datastore.ensureIndexes();
         database = mongoClient.getDatabase(dbName);
     }
+    public MongoDBHelper(String host, int port, String dbName) {
+        this(host, port, dbName, "dao.Entity");
+    }
+
+
+    public <T> List<T> saveEntityForIoTable(List<T> entityList, int batchSize, ExecutorService executor) {
+        long entityListSize = entityList.size();
+        long batchNum = entityListSize / batchSize;
+        long lastBatchSize = entityListSize % batchSize;
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (int i = 0; i < batchNum; i++) {
+            List<T> batch = new ArrayList<>(batchSize);
+            for (int j = 0; j < batchSize; j++) {
+                batch.add(entityList.get((int) (i * batchSize + j)));
+            }
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                datastore.save(batch);
+            }, executor);
+            futures.add(future);
+        }
+
+        if (lastBatchSize != 0) {
+            List<T> lastBatch = new ArrayList<>((int) lastBatchSize);
+            for (int i = (int) (entityListSize - lastBatchSize); i < entityListSize; i++) {
+                lastBatch.add(entityList.get(i));
+            }
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                datastore.save(lastBatch);
+            }, executor);
+            futures.add(future);
+        }
+
+        // 监测所有任务是否完成
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        // 添加回调，任务完成时输出提示信息
+        allOf.thenRun(() -> {
+            Log.trace("Tasks have completed.");
+        });
+
+        return entityList;
+    }
+
+
 
     public Datastore getdatastore() {
         return datastore;
@@ -39,13 +108,11 @@ public class MongoDBHelper {
     // 保存实体对象, 如果已存在, 则更新
     public <T> T saveEntity(T entity) {
         datastore.save(entity);
-        datastore.ensureIndexes();
         return entity;
     }
 
     public <T> List<T> saveEntity(List<T> entityList) {
         datastore.save(entityList);
-        datastore.ensureIndexes();
         return entityList;
     }
 
@@ -77,8 +144,13 @@ public class MongoDBHelper {
         }
 
         executor.shutdown();
-        datastore.ensureIndexes();
-        return entityList;
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            return entityList;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public <T> List<T> saveEntity(List<T> entityList, int batchSize) {
@@ -95,7 +167,7 @@ public class MongoDBHelper {
             datastore.save(batch);
             batch.clear();
         }
-        datastore.ensureIndexes();
+
         return entityList;
     }
 
@@ -155,9 +227,8 @@ public class MongoDBHelper {
     }
 
     // 分页查找
-    //若实体类中存在时间, 则按时间排序, 默认为降序
     public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize) {
-        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize).sort(new Document("updateTime", -1)))) {
+        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize))) {
             return find.toList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,13 +237,12 @@ public class MongoDBHelper {
     }
 
     // 分页查找
-    // 若实体类中存在时间, 则按时间排序, 默认为降序, -1 降序, 1 升序
     public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize, int sort) {
         // sort: 1 升序, -1 降序
         if (sort != -1 && sort != 1) {
             return null;
         }
-        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize).sort(new Document("updateTime", sort)))) {
+        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize).sort(new Document("cT", sort)))) {
             return find.toList();
         } catch (Exception e) {
             e.printStackTrace();

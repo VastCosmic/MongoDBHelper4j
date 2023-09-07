@@ -1,47 +1,71 @@
 package TestMain;
 
 import Log.Log;
+import dao.Entity.IOTable;
 import dao.MongoDBHelper;
-import dao.Stu;
+import dao.Entity.Stu;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static TestMain.TestMain.TestPak.largeDataSaveTest;
+import static TestMain.TestMain.TestPak.*;
 import static java.lang.Thread.sleep;
+
 
 public class TestMain {
     public static void main(String[] args) throws InterruptedException {
-        MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo");
+        MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo","dao.Entity");
 
-        //每秒存储一次
+        //ioTableSaveTest();
 //        Timer timer = new Timer();
 //        timer.schedule(new TimerTask() {
 //            @Override
 //            public void run() {
-//                largeDataSaveTest();
+//                ioTableSaveTest();
 //            }
 //        }, 0, 1000);
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        int i = 0;
+        while (true) {
+            i++;
+            ioTableSaveTest(executor);
+            Log.info("第" + i + "次");
+            sleep(1000);
+            if (i==200){
+                executor.shutdown();
+                try {
+                    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                    return;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-        Log.info("Start finding data.");
-        //var result = db.findEntityByPageByTime(Stu.class, 1, 10, -1);
-        var result = db.findEntityByPage(Stu.class, 900000, 100);
-        //var result = db.findEntityWithBatchSize(Stu.class,100);
-        Log.info("Finding data OK.");
-        // 打印找到的个数
-        Log.info("Found " + result.size() + " records.");
 
-//
+//        Log.info("Start finding data.");
+//        //var result = db.findEntityByPageByTime(Stu.class, 1, 10, -1);
+//        var result = db.findEntityByPage(Stu.class, 900000, 100);
+//        //var result = db.findEntityWithBatchSize(Stu.class,100);
+//        Log.info("Finding data OK.");
+//        // 打印找到的个数
+//        Log.info("Found " + result.size() + " records.");
+
+
 ////        // 删除
 ////        Log.info("Start deleting data.");
 ////        db.deleteEntity(result);
 ////        Log.info("Deleting data OK.");
 //
         // 打印
-        for(var obj : result){
-            Log.info("Name：" + obj.getName() + " Age：" + obj.getAge() + " Gender：" + obj.getGender());
-            Log.info("Creator：" + obj.getCreator() + " CreateTime：" + obj.getCreateTime() + " Updater：" + obj.getUpdater() + " UpdateTime：" + obj.getUpdateTime());
-        }
+//        for(var obj : result){
+//            Log.info("Name：" + obj.getName() + " Age：" + obj.getAge() + " Gender：" + obj.getGender());
+//            Log.info("Creator：" + obj.getCreator() + " CreateTime：" + obj.getCreateTime() + " Updater：" + obj.getUpdater() + " UpdateTime：" + obj.getUpdateTime());
+//        }
 
         // 新建一个线程，每小时打印一次数据库中的数据到文件中
 //        Thread thread = new Thread(
@@ -87,7 +111,37 @@ public class TestMain {
     }
 
     public static class TestPak {
-        private static final MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo");
+        private static final MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo","dao.Entity");
+
+        public static boolean ioTableSaveTest() {
+            int batchSize = 100;
+            int totalRecords = 20000;
+            List<IOTable> ioTableList = new ArrayList<>();
+            for(int i = 0; i < totalRecords; i++) {
+                IOTable ioTable = new IOTable();
+                ioTableList.add(ioTable);
+            }
+            Log.info("Start saving data.");
+            db.saveEntity(ioTableList, batchSize,4);
+            Log.info("Saving data OK.");
+            // 清理内存
+            ioTableList.clear();
+            System.gc();
+            return true;
+        }
+
+        public static boolean ioTableSaveTest(ExecutorService executor) {
+            int batchSize = 100;
+            int totalRecords = 20000;
+            List<IOTable> ioTableList = new ArrayList<>();
+            for (int i = 0; i < totalRecords; i++) {
+                IOTable ioTable = new IOTable();
+                ioTableList.add(ioTable);
+            }
+            Log.info("Start saving data.");
+            db.saveEntityForIoTable(ioTableList, batchSize, executor);
+            return true;
+        }
 
         public static void largeDataSaveTest() {
             int batchSize = 100;

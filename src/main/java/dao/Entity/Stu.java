@@ -1,4 +1,4 @@
-package dao;
+package dao.Entity;
 
 import dev.morphia.annotations.*;
 
@@ -7,7 +7,7 @@ import dev.morphia.annotations.*;
  * @Entity(value = "stu") 表示该类对应的表名为stu
  * @Id 注解表示该字段为主键
  */
-@Entity(value = "stu_keepAlive")
+@Entity(value = "stu_keepAlive_5")
 public class Stu extends BaseObj {
     /*
      *以下为实体类的属性
