@@ -9,14 +9,17 @@ import static dev.morphia.utils.IndexDirection.DESC;
 
 /*
  * @Entity 注解表示该类为实体类
- * @Entity(value = "io_table") 表示该类对应的集合名为 io_table
+ * @Entity(value = "io_table", useDiscriminator = false)
+ * value = "io_table" 表示该类对应的集合名为 io_table
+ * useDiscriminator = false 表示不使用区分器field
+ *
  * @Id 注解表示该字段为主键
  * @Indexes 注解表示该类的索引
  * @Index 表示该类的索引的属性
  * @IndexOptions 表示该类的索引的属性的选项
  * @Field 表示该类的索引的属性的选项的属性
  */
-@Entity(value = "io_table")
+@Entity(value = "io_table", useDiscriminator = false)
 //@Indexes(@Index(fields = @Field(value = "createTime", type = DESC)))
 public class IOTable {
     @Id
