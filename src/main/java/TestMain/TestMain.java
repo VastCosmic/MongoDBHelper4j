@@ -25,9 +25,9 @@ public class TestMain {
         int i = 0;
         while (true) {
             i++;
-            ioTableSaveTest(executor);
+            ioTableSaveTestAsync(executor);
             Log.info("第" + i + "次");
-            sleep(2000);
+            sleep(1000);
             if (i==200){
                 // 关闭线程池
                 executor.shutdown();
@@ -119,13 +119,10 @@ public class TestMain {
             Log.info("Start saving data.");
             db.saveEntity(ioTableList, batchSize,4);
             Log.info("Saving data OK.");
-            // 清理内存
-            ioTableList.clear();
-            System.gc();
             return true;
         }
 
-        public static boolean ioTableSaveTest(ExecutorService executor) {
+        public static boolean ioTableSaveTestAsync(ExecutorService executor) {
             int batchSize = 100;
             int totalRecords = 20000;
             List<IOTable> ioTableList = new ArrayList<>();
@@ -134,7 +131,7 @@ public class TestMain {
                 ioTableList.add(ioTable);
             }
             Log.info("Start saving data.");
-            db.saveEntityForIoTable(ioTableList, batchSize, executor);
+            db.saveEntityAsync(ioTableList, batchSize, executor);
             return true;
         }
 
@@ -157,7 +154,7 @@ public class TestMain {
                 stuList.add(student);
             }
             Log.info("Start saving data.");
-            db.saveEntity(stuList, batchSize, 8);    // 5ms
+            db.saveEntity(stuList, batchSize, 8);
             Log.info("Saving data OK.");
         }
 

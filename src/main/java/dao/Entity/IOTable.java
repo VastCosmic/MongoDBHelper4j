@@ -40,6 +40,7 @@ public class IOTable {
         this.tagCode = Id.substring(0, 7);
         this.tagValue = Id.substring(7, 16);
         this.stringBak = Id.substring(16, 22);
+        this.Id = generateId(this.tagCode, this.createTime);
     }
 
     public IOTable(String tagCode, String tagValue) {
@@ -53,6 +54,15 @@ public class IOTable {
         this.tagCode = tagCode;
         this.tagValue = tagValue;
         this.stringBak = stringBak;
+    }
+
+    // generate Id
+    public static String generateId(String str, Date date) {
+        // 将时间转换为字符串,去除非数字字符
+        String timestampString = String.valueOf(date);
+        timestampString = timestampString.replaceAll("[^0-9]", "");
+        // 拼接字符串
+        return str + "-" + timestampString;
     }
 
     public String getId() {

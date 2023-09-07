@@ -56,7 +56,7 @@ public class MongoDBHelper {
     }
 
 
-    public <T> List<T> saveEntityForIoTable(List<T> entityList, int batchSize, ExecutorService executor) {
+    public <T> CompletableFuture<List<T>> saveEntityAsync(List<T> entityList, int batchSize, ExecutorService executor) {
         long entityListSize = entityList.size();
         long batchNum = entityListSize / batchSize;
         long lastBatchSize = entityListSize % batchSize;
@@ -85,15 +85,14 @@ public class MongoDBHelper {
             futures.add(future);
         }
 
-        // 监测所有任务是否完成
+        // 等待所有任务完成后返回结果
         CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-        // 添加回调，任务完成时输出提示信息
-        allOf.thenRun(() -> {
+        return allOf.thenApply(result -> {
             Log.trace("Tasks have completed.");
+            return entityList;
         });
-
-        return entityList;
     }
+
 
 
 
@@ -113,6 +112,24 @@ public class MongoDBHelper {
 
     public <T> List<T> saveEntity(List<T> entityList) {
         datastore.save(entityList);
+        return entityList;
+    }
+
+    public <T> List<T> saveEntity(List<T> entityList, int batchSize) {
+        long entityListSize = entityList.size();
+        List<T> batch = new ArrayList<>(batchSize);
+        for (T entity : entityList) {
+            batch.add(entity);
+            if (batch.size() == batchSize) {
+                datastore.save(batch);
+                batch.clear();
+            }
+        }
+        if (!batch.isEmpty()) {
+            datastore.save(batch);
+            batch.clear();
+        }
+
         return entityList;
     }
 
@@ -152,25 +169,6 @@ public class MongoDBHelper {
             return null;
         }
     }
-
-    public <T> List<T> saveEntity(List<T> entityList, int batchSize) {
-        long entityListSize = entityList.size();
-        List<T> batch = new ArrayList<>(batchSize);
-        for (T entity : entityList) {
-            batch.add(entity);
-            if (batch.size() == batchSize) {
-                datastore.save(batch);
-                batch.clear();
-            }
-        }
-        if (!batch.isEmpty()) {
-            datastore.save(batch);
-            batch.clear();
-        }
-
-        return entityList;
-    }
-
 
     // 删除实体对象
     public <T> DeleteResult deleteEntity(T entity) {
@@ -228,22 +226,29 @@ public class MongoDBHelper {
 
     // 分页查找
     public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize) {
-        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize))) {
-            return find.toList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return findEntityByPage(clazz, page, pageSize, 0, null);
     }
 
-    // 分页查找
+    // 分页查找,按照默认“cT”排序（创建时间），注意没有此属性时会报错！
     public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize, int sort) {
+        return findEntityByPage(clazz, page, pageSize, sort, "cT");
+    }
+
+    // 分页查找,按照指定fieldName排序
+    public <T> List<T> findEntityByPage(Class<T> clazz, int page, int pageSize, int sort, String fieldName) {
         // sort: 1 升序, -1 降序
         if (sort != -1 && sort != 1) {
             return null;
         }
-        try (var find = datastore.find(clazz).iterator(new FindOptions().skip(page * pageSize).limit(pageSize).sort(new Document("cT", sort)))) {
-            return find.toList();
+        try {
+            FindOptions findOptions = new FindOptions().skip(page * pageSize).limit(pageSize);
+            if (fieldName != null) {
+                findOptions.sort(new Document(fieldName, sort));
+            }
+
+            try (var find = datastore.find(clazz).iterator(findOptions)) {
+                return find.toList();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
