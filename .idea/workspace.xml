@@ -4,15 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf548a17-7987-46c2-a0c1-31769ea1ef3c" name="更改" comment="update log xml">
-      <change afterPath="$PROJECT_DIR$/src/main/java/TestMain/TestMain2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/IOTable.java" afterDir="false" />
+    <list default="true" id="bf548a17-7987-46c2-a0c1-31769ea1ef3c" name="更改" comment="update save method">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/TestMain/TestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TestMain/TestMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/BaseObj.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/BaseObj.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/MongoDBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MongoDBHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/Stu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/Stu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/TestMain/TestMain2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TestMain/TestMain2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dao/Entity/IOTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/IOTable.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +30,7 @@
     <setting file="jar://$USER_HOME$/.ideaLibSources/morphia-core-2.3.6-sources.jar!/dev/morphia/Datastore.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="jar://$USER_HOME$/.ideaLibSources/morphia-core-2.3.6-sources.jar!/dev/morphia/DatastoreImpl.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="jar://$USER_HOME$/.ideaLibSources/morphia-core-2.3.6-sources.jar!/dev/morphia/sofia/Sofia.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="jar://$MAVEN_REPOSITORY$/dev/morphia/morphia/morphia-core/2.3.6/morphia-core-2.3.6-sources.jar!/dev/morphia/Datastore.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$MAVEN_REPOSITORY$/dev/morphia/morphia/morphia-core/2.3.6/morphia-core-2.3.6-sources.jar!/dev/morphia/mapping/DiscriminatorFunction.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="jar://$MAVEN_REPOSITORY$/dev/morphia/morphia/morphia-core/2.3.6/morphia-core-2.3.6-sources.jar!/dev/morphia/mapping/codec/pojo/EntityModelBuilder.java" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -207,7 +204,7 @@
       <workItem from="1693887299613" duration="12793000" />
       <workItem from="1694043957738" duration="84000" />
       <workItem from="1694045709936" duration="778000" />
-      <workItem from="1694049155344" duration="5750000" />
+      <workItem from="1694049155344" duration="13167000" />
     </task>
     <task id="LOCAL-00001" summary="demo">
       <option name="closed" value="true" />
@@ -297,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1693639074694</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="update save method">
+      <option name="closed" value="true" />
+      <created>1694055134560</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1694055134560</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -314,7 +319,8 @@
     <MESSAGE value="v0.3.0 UPDATE README.md" />
     <MESSAGE value="v0.4.0 新增分页查找，索引创建" />
     <MESSAGE value="update log xml" />
-    <option name="LAST_COMMIT_MESSAGE" value="update log xml" />
+    <MESSAGE value="update save method" />
+    <option name="LAST_COMMIT_MESSAGE" value="update save method" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

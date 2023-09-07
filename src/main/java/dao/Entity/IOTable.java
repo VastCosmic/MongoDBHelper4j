@@ -1,9 +1,6 @@
 package dao.Entity;
 
-import dev.morphia.annotations.Entity;
-import dev.morphia.annotations.Id;
-import dev.morphia.annotations.IndexOptions;
-import dev.morphia.annotations.Indexed;
+import dev.morphia.annotations.*;
 
 import java.util.Date;
 import java.util.UUID;
@@ -20,79 +17,78 @@ import static dev.morphia.utils.IndexDirection.DESC;
  * @Field 表示该类的索引的属性的选项的属性
  */
 @Entity(value = "io_table")
-//@Indexes(@Index(fields = @Field(value = "cT", type = DESC)))
+//@Indexes(@Index(fields = @Field(value = "createTime", type = DESC)))
 public class IOTable {
-    // id
     @Id
     private String Id;
-    // createTime
+    @Property("cT") // Property注解 表示该字段在数据库中的名字
     @Indexed(options = @IndexOptions(expireAfterSeconds = 259200), value = DESC)
-    private Date cT = new Date(System.currentTimeMillis());
-    // tagCode
-    private String tC;
-    // tagValue
-    private String tV;
-    // 备用
-    private String b1;
+    private Date createTime = new Date(System.currentTimeMillis());
+    @Property("tC")
+    private String tagCode;
+    @Property("tV")
+    private String tagValue;
+    @Property("b1")
+    private String stringBak;   // 备用字段
 
     public IOTable() {
         this.Id = UUID.randomUUID().toString();
         // 随机
-        this.tC = Id.substring(0, 7);
-        this.tV = Id.substring(7, 16);
-        this.b1 = Id.substring(16, 22);
+        this.tagCode = Id.substring(0, 7);
+        this.tagValue = Id.substring(7, 16);
+        this.stringBak = Id.substring(16, 22);
     }
 
-    public IOTable(String tC, String tV) {
+    public IOTable(String tagCode, String tagValue) {
         this.Id = UUID.randomUUID().toString();
-        this.tC = tC;
-        this.tV = tV;
+        this.tagCode = tagCode;
+        this.tagValue = tagValue;
     }
 
-    public IOTable(String tC, String tV, String b1) {
+    public IOTable(String tagCode, String tagValue, String stringBak) {
         this.Id = UUID.randomUUID().toString();
-        this.tC = tC;
-        this.tV = tV;
-        this.b1 = b1;
+        this.tagCode = tagCode;
+        this.tagValue = tagValue;
+        this.stringBak = stringBak;
     }
 
     public String getId() {
         return Id;
     }
 
-    public Date getcT() {
-        return cT;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public String gettC() {
-        return tC;
+    public String getTagCode() {
+        return tagCode;
     }
 
-    public String gettV() {
-        return tV;
+    public String getTagValue() {
+        return tagValue;
     }
 
-    public String getB1() {
-        return b1;
+    public String getStringBak() {
+        return stringBak;
     }
 
     public void setId(String id) {
         Id = id;
     }
 
-    public void setcT(Date cT) {
-        this.cT = cT;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public void settC(String tC) {
-        this.tC = tC;
+    public void setTagCode(String tagCode) {
+        this.tagCode = tagCode;
     }
 
-    public void settV(String tV) {
-        this.tV = tV;
+    public void setTagValue(String tagValue) {
+        this.tagValue = tagValue;
     }
 
-    public void setB1(String b1) {
-        this.b1 = b1;
+    public void setStringBak(String stringBak) {
+        this.stringBak = stringBak;
     }
 }

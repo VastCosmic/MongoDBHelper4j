@@ -20,24 +20,19 @@ public class TestMain {
     public static void main(String[] args) throws InterruptedException {
         MongoDBHelper db = new MongoDBHelper("localhost", 27017, "demo","dao.Entity");
 
-        //ioTableSaveTest();
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                ioTableSaveTest();
-//            }
-//        }, 0, 1000);
+        // 使用固定大小的线程池，避免使用缓存线程池，因为缓存线程池会不断创建新线程，导致占用过高
         ExecutorService executor = Executors.newFixedThreadPool(4);
         int i = 0;
         while (true) {
             i++;
             ioTableSaveTest(executor);
             Log.info("第" + i + "次");
-            sleep(1000);
+            sleep(2000);
             if (i==200){
+                // 关闭线程池
                 executor.shutdown();
                 try {
+                    // 等待所有存储任务完成
                     executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
                     return;
                 } catch (InterruptedException e) {
