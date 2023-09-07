@@ -55,55 +55,6 @@ public class MongoDBHelper {
         this(host, port, dbName, "dao.Entity");
     }
 
-
-    public <T> CompletableFuture<List<T>> saveEntityAsync(List<T> entityList, int batchSize, ExecutorService executor) {
-        long entityListSize = entityList.size();
-        long batchNum = entityListSize / batchSize;
-        long lastBatchSize = entityListSize % batchSize;
-
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (int i = 0; i < batchNum; i++) {
-            List<T> batch = new ArrayList<>(batchSize);
-            for (int j = 0; j < batchSize; j++) {
-                batch.add(entityList.get((int) (i * batchSize + j)));
-            }
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                datastore.save(batch);
-            }, executor);
-            futures.add(future);
-        }
-
-        if (lastBatchSize != 0) {
-            List<T> lastBatch = new ArrayList<>((int) lastBatchSize);
-            for (int i = (int) (entityListSize - lastBatchSize); i < entityListSize; i++) {
-                lastBatch.add(entityList.get(i));
-            }
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                datastore.save(lastBatch);
-            }, executor);
-            futures.add(future);
-        }
-
-        // 等待所有任务完成后返回结果
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-        return allOf.thenApply(result -> {
-            Log.trace("Tasks have completed.");
-            return entityList;
-        });
-    }
-
-
-
-
-    public Datastore getdatastore() {
-        return datastore;
-    }
-
-    public MongoDatabase getDatabase() {
-        return database;
-    }
-
     // 保存实体对象, 如果已存在, 则更新
     public <T> T saveEntity(T entity) {
         datastore.save(entity);
@@ -168,6 +119,43 @@ public class MongoDBHelper {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public <T> CompletableFuture<List<T>> saveEntityAsync(List<T> entityList, int batchSize, ExecutorService executor) {
+        long entityListSize = entityList.size();
+        long batchNum = entityListSize / batchSize;
+        long lastBatchSize = entityListSize % batchSize;
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (int i = 0; i < batchNum; i++) {
+            List<T> batch = new ArrayList<>(batchSize);
+            for (int j = 0; j < batchSize; j++) {
+                batch.add(entityList.get((int) (i * batchSize + j)));
+            }
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                datastore.save(batch);
+            }, executor);
+            futures.add(future);
+        }
+
+        if (lastBatchSize != 0) {
+            List<T> lastBatch = new ArrayList<>((int) lastBatchSize);
+            for (int i = (int) (entityListSize - lastBatchSize); i < entityListSize; i++) {
+                lastBatch.add(entityList.get(i));
+            }
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                datastore.save(lastBatch);
+            }, executor);
+            futures.add(future);
+        }
+
+        // 等待所有任务完成后返回结果
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        return allOf.thenApply(result -> {
+            //Log.trace("Tasks have completed.");
+            return entityList;
+        });
     }
 
     // 删除实体对象
@@ -464,5 +452,11 @@ public class MongoDBHelper {
     public void close() {
         mongoClient.close();
         Log.info("MongoDB client closed.");
+    }
+    public Datastore getdatastore() {
+        return datastore;
+    }
+    public MongoDatabase getDatabase() {
+        return database;
     }
 }

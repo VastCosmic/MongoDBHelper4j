@@ -25,7 +25,7 @@ public class IOTable {
     @Id
     private String Id;
     @Property("cT") // Property注解 表示该字段在数据库中的名字
-    @Indexed(options = @IndexOptions(expireAfterSeconds = 259200), value = DESC)
+    @Indexed(options = @IndexOptions(expireAfterSeconds = 259200), value = DESC)    // expireAfterSeconds 表示过期时间  value = DESC 表示降序索引
     private Date createTime = new Date(System.currentTimeMillis());
     @Property("tC")
     private String tagCode;
