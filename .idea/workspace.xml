@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf548a17-7987-46c2-a0c1-31769ea1ef3c" name="更改" comment="update Discriminator setting">
+    <list default="true" id="bf548a17-7987-46c2-a0c1-31769ea1ef3c" name="更改" comment="update Async method">
+      <change afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/IdEntity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/TestMain/TestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TestMain/TestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/TestMain/TestMain2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TestMain/TestMain2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dao/Entity/BaseObj.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/BaseObj.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dao/Entity/IOTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/Entity/IOTable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dao/MongoDBHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MongoDBHelper.java" afterDir="false" />
     </list>
@@ -204,7 +208,8 @@
       <workItem from="1693887299613" duration="12793000" />
       <workItem from="1694043957738" duration="84000" />
       <workItem from="1694045709936" duration="778000" />
-      <workItem from="1694049155344" duration="18324000" />
+      <workItem from="1694049155344" duration="21645000" />
+      <workItem from="1694132531225" duration="1181000" />
     </task>
     <task id="LOCAL-00001" summary="demo">
       <option name="closed" value="true" />
@@ -318,11 +323,38 @@
       <option name="project" value="LOCAL" />
       <updated>1694068132057</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="update Async method">
+      <option name="closed" value="true" />
+      <created>1694072138387</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1694072138387</updated>
+    </task>
+    <task id="LOCAL-00016" summary="update Async method">
+      <option name="closed" value="true" />
+      <created>1694074268192</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1694074268192</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -337,7 +369,8 @@
     <MESSAGE value="update log xml" />
     <MESSAGE value="update save method" />
     <MESSAGE value="update Discriminator setting" />
-    <option name="LAST_COMMIT_MESSAGE" value="update Discriminator setting" />
+    <MESSAGE value="update Async method" />
+    <option name="LAST_COMMIT_MESSAGE" value="update Async method" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

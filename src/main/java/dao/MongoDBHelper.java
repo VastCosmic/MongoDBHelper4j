@@ -153,7 +153,7 @@ public class MongoDBHelper {
         // 等待所有任务完成后返回结果
         CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
         return allOf.thenApply(result -> {
-            //Log.trace("Tasks have completed.");
+            Log.trace("Tasks have completed.");
             return entityList;
         });
     }

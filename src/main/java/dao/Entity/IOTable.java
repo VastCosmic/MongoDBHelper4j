@@ -1,11 +1,10 @@
 package dao.Entity;
 
-import dev.morphia.annotations.*;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.annotations.Property;
 
-import java.util.Date;
 import java.util.UUID;
-
-import static dev.morphia.utils.IndexDirection.DESC;
 
 /*
  * @Entity 注解表示该类为实体类
@@ -18,63 +17,52 @@ import static dev.morphia.utils.IndexDirection.DESC;
  * @Index 表示该类的索引的属性
  * @IndexOptions 表示该类的索引的属性的选项
  * @Field 表示该类的索引的属性的选项的属性
+ *
+ * 以下备用
+//    @Property("cT") // Property注解 表示该字段在数据库中的名字
+//    @Indexed(options = @IndexOptions(expireAfterSeconds = 259200), value = DESC)    // expireAfterSeconds 表示过期时间  value = DESC 表示降序索引
+//    private Date createTime = new Date(System.currentTimeMillis());
+//    @Property("tC")
+//    private String tagCode;
  */
 @Entity(value = "io_table", useDiscriminator = false)
-//@Indexes(@Index(fields = @Field(value = "createTime", type = DESC)))
 public class IOTable {
     @Id
-    private String Id;
-    @Property("cT") // Property注解 表示该字段在数据库中的名字
-    @Indexed(options = @IndexOptions(expireAfterSeconds = 259200), value = DESC)    // expireAfterSeconds 表示过期时间  value = DESC 表示降序索引
-    private Date createTime = new Date(System.currentTimeMillis());
-    @Property("tC")
-    private String tagCode;
+    private IdEntity Id;
     @Property("tV")
     private String tagValue;
     @Property("b1")
     private String stringBak;   // 备用字段
 
     public IOTable() {
-        this.Id = UUID.randomUUID().toString();
-        // 随机
-        this.tagCode = Id.substring(0, 7);
-        this.tagValue = Id.substring(7, 16);
-        this.stringBak = Id.substring(16, 22);
-        this.Id = generateId(this.tagCode, this.createTime);
-    }
-
-    public IOTable(String tagCode, String tagValue) {
-        this.Id = UUID.randomUUID().toString();
-        this.tagCode = tagCode;
-        this.tagValue = tagValue;
+        // 随机,仅测试
+        var tagCode = UUID.randomUUID().toString();
+        this.Id = new IdEntity(tagCode.substring(0,7));
+        this.tagValue = tagCode.substring(7, 16);
+        this.stringBak = tagCode.substring(16, 22);
     }
 
     public IOTable(String tagCode, String tagValue, String stringBak) {
-        this.Id = UUID.randomUUID().toString();
-        this.tagCode = tagCode;
+        this.Id = new IdEntity(tagCode);
         this.tagValue = tagValue;
         this.stringBak = stringBak;
     }
 
-    // generate Id
-    public static String generateId(String str, Date date) {
-        // 将时间转换为字符串,去除非数字字符
-        String timestampString = String.valueOf(date);
-        timestampString = timestampString.replaceAll("[^0-9]", "");
-        // 拼接字符串
-        return str + "-" + timestampString;
+    public IOTable(String tagCode, String tagValue) {
+        this.Id = new IdEntity(tagCode);
+        this.tagValue = tagValue;
     }
 
-    public String getId() {
+    public IOTable(String tagCode) {
+        this.Id = new IdEntity(tagCode);
+    }
+
+    public IdEntity getId() {
         return Id;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public String getTagCode() {
-        return tagCode;
+    public void setId(IdEntity id) {
+        Id = id;
     }
 
     public String getTagValue() {
@@ -85,23 +73,19 @@ public class IOTable {
         return stringBak;
     }
 
-    public void setId(String id) {
-        Id = id;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public void setTagCode(String tagCode) {
-        this.tagCode = tagCode;
-    }
-
     public void setTagValue(String tagValue) {
         this.tagValue = tagValue;
     }
 
     public void setStringBak(String stringBak) {
         this.stringBak = stringBak;
+    }
+
+    public String toString() {
+        return "IOTable{" +
+                "Id=" + Id +
+                ", tagValue='" + tagValue + '\'' +
+                ", stringBak='" + stringBak + '\'' +
+                '}';
     }
 }

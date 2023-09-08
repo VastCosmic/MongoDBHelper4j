@@ -20,10 +20,10 @@ public class TestMain2 {
             var result = db.findEntityByPage(IOTable.class,page,pagesize,-1);
             //var result = db.findEntity(IOTable.class);
             //打印
-            for(var obj : result){
-                Log.debug("cT：" + obj.getCreateTime());
-                Log.debug("tC：" + obj.getTagCode() + " tV：" + obj.getTagValue() + " b1：" + obj.getStringBak());
-            }
+//            for(var obj : result){
+//                Log.debug("cT：" + obj.getCreateTime());
+//                Log.debug("tC：" + obj.getTagCode() + " tV：" + obj.getTagValue() + " b1：" + obj.getStringBak());
+//            }
             if (result.isEmpty()){
                 Log.debug("没有数据");
             }

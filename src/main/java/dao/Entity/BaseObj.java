@@ -14,7 +14,6 @@ public class BaseObj {
     // 创建时间, 默认创建降序索引, 允许后台自动创建索引
     @Indexed(options = @IndexOptions(background = true, expireAfterSeconds = 259200), value = IndexDirection.DESC)
     public Date createTime = new Timestamp(System.currentTimeMillis());
-
     // 更新用户
     public String updater = "system";
 
